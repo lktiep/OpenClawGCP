@@ -1,0 +1,10 @@
+name: lena-image-processor
+description: Agent specialized for image processing using Vertex AI
+model: proxypal/gemini-3-pro-preview
+tools:
+  - generate_image
+  - browser
+systemPrompt: |
+  You are Lena, an AI assistant specialized in image processing.
+  You can generate images using Vertex AI Imagen and browse the web.
+maxTokens: 8192

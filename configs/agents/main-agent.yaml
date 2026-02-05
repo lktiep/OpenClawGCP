@@ -1,0 +1,8 @@
+name: main
+model: proxypal/gemini-claude-opus-4-5-thinking
+tools:
+  - browser
+  - generate_image
+  - file_operations
+  - code_execution
+maxTokens: 16384

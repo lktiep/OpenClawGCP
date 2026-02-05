@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.3",
+    "lastTouchedAt": "2026-02-04T16:53:54.448Z"
+  },
+  "models": {
+    "providers": {
+      "proxypal": {
+        "baseUrl": "http://host.docker.internal:8317/v1",
+        "apiKey": "<YOUR_API_KEY>",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "claude-sonnet-4-5",
+            "name": "Claude Sonnet 4.5",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "gemini-3-pro-preview",
+            "name": "Gemini 3 Pro",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "proxypal/claude-sonnet-4-5",
+        "fallbacks": ["proxypal/gemini-3-pro-preview"]
+      },
+      "maxConcurrent": 4
+    }
+  },
+  "channels": {
+    "telegram": {
+      "dmPolicy": "pairing",
+      "botToken": "<YOUR_TELEGRAM_BOT_TOKEN>",
+      "allowFrom": ["<YOUR_TELEGRAM_USERNAME>"],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "<YOUR_GATEWAY_TOKEN>"
+    },
+    "trustedProxies": [
+      "172.18.0.1",
+      "172.16.0.0/12",
+      "10.0.0.0/8",
+      "192.168.0.0/16",
+      "127.0.0.1"
+    ]
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true }
+    }
+  }
+}
