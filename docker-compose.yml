@@ -1,0 +1,50 @@
+services:
+  openclaw-gateway:
+    image: ${OPENCLAW_IMAGE:-openclaw:chromium}
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      KEOTHOM_MCP_API_KEY: ${KEOTHOM_MCP_API_KEY}
+      OPENCLAW_GATEWAY_TRUSTED_PROXIES: "172.0.0.0/8,10.0.0.0/8,192.168.0.0/16"
+      OPENCLAW_AGENT_MODEL: ${OPENCLAW_AGENT_MODEL:-claude-opus-4-5-thinking}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL}
+      CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY}
+      CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY}
+      CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - ./custom-skills:/custom-skills:ro
+    ports:
+      - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+      - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
+    init: true
+    restart: unless-stopped
+    entrypoint: ["bash", "-c", "cp -r /custom-skills/* /app/skills/ 2>/dev/null; echo '[init] Custom skills deployed'; exec node dist/index.js gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port 18789"]
+
+  openclaw-cli:
+    image: ${OPENCLAW_IMAGE:-openclaw:chromium}
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      BROWSER: echo
+      OPENCLAW_AGENT_MODEL: ${OPENCLAW_AGENT_MODEL:-claude-opus-4-5-thinking}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL}
+      CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY}
+      CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY}
+      CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+    stdin_open: true
+    tty: true
+    init: true
+    entrypoint: ["node", "dist/index.js"]
