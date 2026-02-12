@@ -22,60 +22,55 @@ Upload images and files to Cloudflare R2 storage and get a permanent public URL.
 - When you need to **host an image** and share the public URL
 - When you generated an image and want to **send it in chat** (Telegram, Zalo, etc.)
 - When you need to **store files permanently** in the cloud
-- When someone asks you to upload or share an image/file
 
-## Prerequisites (Environment Variables)
-
-These MUST be set in the container environment:
+## Environment Variables (Required)
 
 | Variable | Description |
 |----------|-------------|
-| `R2_ACCESS_KEY_ID` | Cloudflare R2 API token (access key) |
-| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 API secret key |
+| `R2_ACCESS_KEY_ID` | Cloudflare R2 access key |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret key |
 | `R2_ACCOUNT_ID` | Cloudflare account ID (default: `851741409acd69e96d6c480584a3c107`) |
 | `R2_BUCKET_NAME` | R2 bucket name (default: `openclaw-images`) |
-| `R2_PUBLIC_DOMAIN` | Public R2.dev domain (default: `https://pub-406cc49bf2114c608757721fa88725fa.r2.dev`) |
+| `R2_PUBLIC_DOMAIN` | Public domain (default: `https://pub-406cc49bf2114c608757721fa88725fa.r2.dev`) |
 
-## Quick Usage
-
-### Upload a file
+## Option A: Python (recommended, auto-installs boto3)
 
 ```shell
 python3 /app/skills/r2-upload/scripts/upload.py /path/to/image.jpg
 ```
 
-Output: `https://pub-406cc49bf2114c608757721fa88725fa.r2.dev/image.jpg`
-
-### Upload with custom key (path in bucket)
-
+Upload with custom key:
 ```shell
 python3 /app/skills/r2-upload/scripts/upload.py /path/to/photo.png --key "agents/my-photo.png"
 ```
 
-Output: `https://pub-406cc49bf2114c608757721fa88725fa.r2.dev/agents/my-photo.png`
-
-### Upload from URL (download then upload)
-
+Upload from URL:
 ```shell
 python3 /app/skills/r2-upload/scripts/upload.py "https://example.com/image.jpg"
 ```
 
-### Example: Generate image then upload
+## Option B: Node.js (requires @aws-sdk/client-s3)
 
+First install (one-time):
 ```shell
-# 1. Generate or create image
-python3 -c "
-# ... generate image to /tmp/output.png
-"
+cd /app/skills/r2-upload/scripts && npm install @aws-sdk/client-s3
+```
 
-# 2. Upload to R2
-python3 /app/skills/r2-upload/scripts/upload.py /tmp/output.png
+Then upload:
+```shell
+node /app/skills/r2-upload/scripts/upload.js /path/to/image.jpg
+```
+
+## Output
+
+```
+✅ Upload success!
+URL: https://pub-406cc49bf2114c608757721fa88725fa.r2.dev/image.jpg
 ```
 
 ## Important Notes
 
-- Max file size: 300MB (R2 free tier limit for single upload)
-- Supported: any file type (images, PDFs, videos, etc.)
+- Max file size: 300MB (R2 free tier)
 - Files are **publicly accessible** once uploaded
-- Duplicate filenames will be **overwritten** — use `--key` for custom paths
-- If R2 credentials are missing, the script will error with a clear message
+- Duplicate filenames are **overwritten** — use `--key` for unique paths
+- To change bucket/domain: set `R2_BUCKET_NAME` and `R2_PUBLIC_DOMAIN` env vars
