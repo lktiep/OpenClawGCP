@@ -1,0 +1,9 @@
+{
+  "keothom": {
+    "name": "Kèo Thơm Platform",
+    "url": "https://mcp.keothom.bid",
+    "auth_type": "bearer",
+    "auth_env": "KEOTHOM_MCP_API_KEY",
+    "description": "Kèo Thơm platform data — users, wallets, games, transactions, revenue, financial checks"
+  }
+}
